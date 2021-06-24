@@ -1,0 +1,137 @@
+version: "2.0"
+
+stories:
+  - story: happy path 1
+    steps:
+      - user: |
+          hi
+        intent: greet
+      - action: utter_greet
+      - user: |
+          good
+        intent: mood_great
+      - action: utter_happy
+
+  - story: newsletter form happy path
+    steps:
+      - user: |
+          hi
+        intent: greet
+      - action: utter_greet
+      - user: |
+          I want to subscribe
+        intent: subscribe
+      - action: newsletter_form
+      - active_loop: newsletter_form
+      - user: |
+          my email is [example@email.com](email)
+        intent: inform_email
+      - action: newsletter_form
+      - user: |
+          [twice a week](frequency)
+        intent: inform_frequency
+      - action: newsletter_form
+      - active_loop: null
+      - action: utter_subscribed
+      - action: submit_newsletter_form
+
+  - story: Chitchat during email
+    steps:
+      - user: |
+          I want to subscribe
+        intent: subscribe
+      - action: newsletter_form
+      - active_loop: newsletter_form
+      - user: |
+          How's the weather?
+        intent: chitchat
+      - action: utter_ask_continue
+      - user: |
+          Yes, I do
+        intent: affirm
+      - action: newsletter_form
+      - active_loop: null
+      - action: utter_subscribed
+      - action: submit_newsletter_form
+
+  - story: Chitchat during frequency
+    steps:
+      - user: |
+          I want to subscribe
+        intent: subscribe
+      - action: newsletter_form
+      - active_loop: newsletter_form
+      - user: |
+          my email is [example@email.com](email)
+        intent: inform_email
+      - action: newsletter_form
+      - user: |
+          How's the weather?
+        intent: chitchat
+      - action: utter_ask_continue
+      - user: |
+          Yes, I do
+        intent: affirm
+      - action: newsletter_form
+      - active_loop: null
+      - action: utter_subscribed
+      - action: submit_newsletter_form
+
+  - story: Newsletter form two interruptions
+    steps:
+      - intent: subscribe
+        user: |-
+          I want to subscribe
+      - action: newsletter_form
+      - active_loop: newsletter_form
+      - slot_was_set:
+          - requested_slot: email
+      - intent: chitchat
+        user: |-
+          How's the weather?
+      - action: utter_ask_continue
+      - intent: affirm
+        user: |-
+          Yes, I do
+      - action: newsletter_form
+      - slot_was_set:
+          - requested_slot: email
+      - intent: inform_email
+        user: |-
+          my email is [example@email.com](email)
+      - slot_was_set:
+          - email: example@email.com
+      - action: newsletter_form
+      - slot_was_set:
+          - email: example@email.com
+      - slot_was_set:
+          - requested_slot: frequency
+      - intent: chitchat
+        user: |-
+          I want to order a pizza
+      - action: utter_ask_continue
+      - intent: affirm
+        user: |-
+          Sure
+      - action: newsletter_form
+      - slot_was_set:
+          - requested_slot: frequency
+      - intent: inform_frequency
+        user: |-
+          [twice a week](frequency)
+      - action: newsletter_form
+      - slot_was_set:
+          - frequency: twice a week
+      - slot_was_set:
+          - requested_slot: notifications
+      - intent: affirm
+        user: |-
+          yes
+      - action: newsletter_form
+      - slot_was_set:
+          - notifications: yes
+      - slot_was_set:
+          - requested_slot: null
+      - active_loop: null
+      - action: utter_subscribed
+      - action: submit_newsletter_form

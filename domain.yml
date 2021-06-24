@@ -1,0 +1,169 @@
+version: '2.0'
+config:
+  store_entities_as_slots: true
+session_config:
+  session_expiration_time: 60
+  carry_over_slots_to_new_session: false
+intents:
+- greet:
+    use_entities: true
+- mood_great:
+    use_entities: true
+- subscribe:
+    use_entities: true
+- inform_email:
+    use_entities: true
+- inform_frequency:
+    use_entities: true
+- chitchat:
+    use_entities: true
+- affirm:
+    use_entities: true
+- deny:
+    use_entities: true
+- ask_price:
+    use_entities: true
+- explain:
+    use_entities: true
+- mood_bad:
+    use_entities: true
+- goodbye:
+    use_entities: true
+- ask_how_i_feel:
+    use_entities: true
+- confirm:
+    use_entities: true
+- thankyou:
+    use_entities: true
+- inform_age:
+    use_entities: true
+entities:
+- email
+- age
+- frequency
+slots:
+  email:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  frequency:
+    type: rasa.shared.core.slots.CategoricalSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: true
+    values:
+    - once a week
+    - twice a week
+  notifications:
+    type: rasa.shared.core.slots.BooleanSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  requested_slot:
+    type: rasa.shared.core.slots.CategoricalSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: true
+    values:
+    - email
+    - frequency
+  can_ask_age:
+    type: rasa.shared.core.slots.BooleanSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+  age:
+    type: rasa.shared.core.slots.TextSlot
+    initial_value: null
+    auto_fill: true
+    influence_conversation: false
+responses:
+  utter_greet:
+  - buttons:
+    - payload: I feel great
+      title: great
+    - payload: I want to subscribe
+      title: subscribe
+    image: https://media1.giphy.com/media/tczJoRU7XwBS8/giphy.gif
+    text: Hey! How are you?
+  utter_happy:
+  - text: Great, carry on!
+  utter_ask_email:
+  - buttons:
+    - payload: /inform_email{{"email":"example@work.com"}}
+      title: Work email
+    - payload: /inform_email{{"email":"example@home.com"}}
+      title: Personal email
+    text: Which email would you like to use?
+  utter_ask_frequency:
+  - text: How often do you want to receive emails from me?
+  utter_ask_notifications:
+  - buttons:
+    - payload: /affirm
+      title: Yes
+    - payload: /deny
+      title: No
+    text: Do you want notifications?
+  utter_ask_can_ask_age:
+  - text: Can I ask what your age is?
+  utter_ask_age:
+  - text: What is your age?
+  utter_subscribed:
+  - text: You're all set! Check your inbox at {email} to confirm your subscription. You will receive emails {frequency}. Your age is {age}.
+  utter_ask_continue:
+  - text: Sorry, I don't quite understand. Do you want to continue?
+  utter_price_for_once_a_week:
+  - text: Once a week subscription costs $5.
+  utter_price_for_twice_a_week:
+  - text: Twice a week subscription costs $10.
+  utter_explain_email:
+  - text: So that I know where to send it.
+  utter_explain_frequency:
+  - text: So that I know how often to send it.
+  utter_ask_user_question:
+  - text: How do you feel?
+  utter_great:
+  - text: Glad to hear that!
+  utter_bad:
+  - text: I'm sorry to hear that.
+  utter_goodbye:
+  - text: Bye
+  utter_ask_confirm:
+  - text: Do you really want to confirm that?
+  utter_confirmed:
+  - text: Confirmed.
+  utter_email_back:
+  - text: Your email is {email}.
+  utter_age_back:
+  - text: Your age is {age}.
+actions:
+- validate_newsletter_form
+- submit_newsletter_form
+forms:
+  newsletter_form:
+    required_slots:
+      age:
+      - entity: age
+        type: from_entity
+      can_ask_age:
+      - intent: affirm
+        type: from_intent
+        value: true
+      - intent: deny
+        type: from_intent
+        value: false
+      email:
+      - entity: email
+        type: from_entity
+      frequency:
+      - entity: frequency
+        type: from_entity
+      notifications:
+      - intent: affirm
+        type: from_intent
+        value: true
+      - intent: deny
+        type: from_intent
+        value: false
+e2e_actions: []
