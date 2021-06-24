@@ -1,2 +1,1 @@
-not an initial commit, but seems like one
-testing pull request
+This is a template of chatbot made by rasa.
